@@ -229,17 +229,6 @@ button:focus-visible, .field input:focus-visible, .field textarea:focus-visible,
     </div>
   </section>
 
-  <section class="details" id="previewSection" hidden>
-    <h2 data-t="preview"></h2>
-    <div class="field">
-      <textarea id="preview" class="preview" readonly aria-labelledby="previewSection"></textarea>
-    </div>
-    <div class="copy-row">
-      <button type="button" class="copy" id="copyBtn" data-t="copy"></button>
-      <span class="copied" id="copied" hidden data-t="copied"></span>
-    </div>
-    <p class="hint" data-t="hint"></p>
-  </section>
 </div>
 
 <div class="bar">
@@ -372,15 +361,6 @@ CONFIG.flavors.forEach(f => {
 ["custName", "pickup", "notes"].forEach(id => $(id).addEventListener("input", render));
 document.querySelectorAll(".lang button").forEach(b => b.addEventListener("click", () => setLang(b.dataset.lang)));
 
-$("copyBtn").addEventListener("click", () => {
-  const text = buildMessage();
-  const done = () => { $("copied").hidden = false; setTimeout(() => { $("copied").hidden = true; }, 2000); };
-  const fallback = () => { const p = $("preview"); p.focus(); p.select(); };
-  try {
-    navigator.clipboard.writeText(text).then(done, fallback);
-  } catch (e) { fallback(); }
-});
-
 function change(id, d) {
   qty[id] = Math.max(0, Math.min(99, qty[id] + d));
   render();
@@ -449,10 +429,8 @@ function render() {
   $("total").textContent = L.money(count * CONFIG.price);
 
   const order = $("order");
-  $("previewSection").hidden = !count;
   if (count) {
     const msg = buildMessage();
-    $("preview").value = msg;
     const num = CONFIG.whatsappNumber.replace(/\D/g, "");
     order.href = `https://wa.me/${num}?text=${encodeURIComponent(msg)}`;
     order.setAttribute("aria-disabled", "false");
